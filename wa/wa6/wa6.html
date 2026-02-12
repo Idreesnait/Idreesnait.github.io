@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design System Template</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        :root {
+            /* Color Palette - 5 Core Colors */
+            --color-primary: #A4212A;
+            --color-secondary: #204B4F;
+            --color-accent: #77BA99;
+            --color-neutral: #262730;
+            --color-highlight: #F1DAEA;
+            
+            --color-background: #F1DAEA; 
+            --color-text-dark: var(--color-neutral);
+            --color-text-light: white;
+
+            /* Typography */
+            --font-primary: 'Bungee', cursive;
+            --font-secondary: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+
+            /* Modular Type Scale (1.25 ratio) */
+            --font-size-base: 1rem;
+            --font-size-sm: 0.8rem;
+            --font-size-h3: 1.25rem;
+            --font-size-h2: 1.5625rem;
+            --font-size-h1: 1.953125rem;
+
+            /* Spacing System (8px base) */
+            --spacing-xs: 0.5rem;   
+            --spacing-sm: 1rem;     
+            --spacing-md: 1.5rem;   
+            --spacing-lg: 2rem;     
+            --spacing-xl: 3rem;
+
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-secondary);
+            line-height: 1.6;
+            background-color: var(--color-background);
+            color: var(--color-text-dark);
+            padding: var(--spacing-xl);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Typography */
+        h1 {
+            font-family: var(--font-primary);
+            font-size: var(--font-size-h1);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-primary);
+        }
+
+        h2 {
+            font-family: var(--font-primary);
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-secondary);
+        }
+
+        h3 {
+            font-family: var(--font-primary);
+            font-size: var(--font-size-h3);
+            font-weight: 500;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-accent);
+        }
+
+        .body-text {
+            font-size: var(--font-size-base);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .small-text {
+            font-size: var(--font-size-sm);
+            color: rgba(38,39,48,0.7);
+        }
+
+        /* Color Palette */
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid black;
+        }
+
+        .color-swatch {
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Button */
+        .button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: transparent;
+            color: var(--color-primary);
+            text-decoration: none;
+            border: 2px solid var(--color-primary);
+            border-radius: 999px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.25s ease;
+        }
+
+        .button:hover {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .button:active {
+            transform: translateY(2px);
+        }
+
+        .button:focus-visible {
+            outline: 3px solid var(--color-secondary);
+            outline-offset: 4px;
+        }
+
+        /* Links */
+        .link {
+            color: var(--color-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease, text-decoration-color 0.3s;
+        }
+
+        .link:hover {
+            color: var(--color-primary);
+            text-decoration: underline;
+            text-decoration-color: var(--color-accent);
+        }
+
+        .link:visited {
+            color: var(--color-accent);
+        }
+
+        .link:focus-visible {
+            outline: 3px solid var(--color-primary);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+
+        /* Input */
+        input {
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--color-neutral);
+            font-family: var(--font-secondary);
+            font-size: var(--font-size-base);
+            margin-top: var(--spacing-sm);
+        }
+
+        input:focus-visible {
+            outline: 3px solid var(--color-secondary);
+            outline-offset: 2px;
+        }
+
+        /* Spacing Demo */
+        .spacing-demo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .spacing-block {
+            background-color: var(--color-primary);
+            height: 50px;
+        }
+
+        section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Design System Template</h1>
+
+        <section>
+            <h2>Color Palette</h2>
+            <div class="color-palette">
+                <div class="color-swatch" style="background-color: #A4212A; color: white;">
+                    <strong>Primary Color</strong>
+                    <p>#A4212A</p>
+                    <small>Contrast Ratio Against #F1DAEA: 5.63:1</small>
+                </div>
+                <div class="color-swatch" style="background-color: #204B4F; color: white;">
+                    <strong>Secondary Color</strong>
+                    <p>#204B4F</p>
+                    <small>Contrast RatioAgainst #F1DAEA: 7.31:1</small>
+                </div>
+                <div class="color-swatch" style="background-color: #77BA99; color: #262730;">
+                    <strong>Accent Color</strong>
+                    <p>#77BA99</p>
+                    <small>Contrast Ratio Against #262730: 6.54:1</small>
+                </div>
+                <div class="color-swatch" style="background-color: #262730; color: white;">
+                    <strong>Neutral Color</strong>
+                    <p>#262730</p>
+                    <small>Contrast Ratio Against #F1DAEA: 12.6:1</small>
+                </div>
+                <div class="color-swatch" style="background-color: #F1DAEA; color: #262730;">
+                    <strong>Highlight Color</strong>
+                    <p>#F1DAEA</p>
+                    <small>Contrast Ratio Against #262730: 11.27:1</small>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Typography</h2>
+            <h1>Heading 1 - Bungee</h1>
+            <h2>Heading 2 - Bungee</h2>
+            <h3>Heading 3 - Bungee</h3>
+            <p class="body-text">Body Text - Using Source Sans Pro with a comfortable line height and readable size.</p>
+            <p class="small-text">Small Text - Subtle and understated, perfect for annotations and footnotes.</p>
+        </section>
+
+        <section>
+            <h2>Spacing System</h2>
+            <div class="spacing-demo">
+                <div class="spacing-block" style="width: var(--spacing-xs)"></div>
+                <div class="spacing-block" style="width: var(--spacing-sm)"></div>
+                <div class="spacing-block" style="width: var(--spacing-md)"></div>
+                <div class="spacing-block" style="width: var(--spacing-lg)"></div>
+                <div class="spacing-block" style="width: var(--spacing-xl)"></div>
+            </div>
+            <p>Spacing blocks demonstrating size variations from xs to xl</p>
+        </section>
+
+        <section>
+            <h2>Interactive Components</h2>
+            <a href="#" class="button">Primary Button</a>
+            <a href="#" class="link">Standard Link</a>
+            <a href="#" class="link" style="color: #651d07;">Visited Link</a>
+            <div style="margin-top: var(--spacing-md);">
+                <label for="example-input">Example Input</label><br>
+                <input id="example-input" type="text" placeholder="Type here">
+            </div>
+        </section>
+    </div>
+</body>
+</html>
