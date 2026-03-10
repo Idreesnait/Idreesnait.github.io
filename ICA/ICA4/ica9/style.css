@@ -1,0 +1,291 @@
+/* Note for grader: I changed the names of everything so that the css only applies to the correct example */
+
+body {
+  font-family: sans-serif;
+  margin: 40px;
+  font-size: 1.2em;
+  line-height: 1.5;
+}
+
+section {
+  margin-bottom: 80px;
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+nav a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #333;
+}
+
+nav a:hover {
+  color: #0077ff;
+}
+
+main {
+  max-width: 1000px;
+}
+
+
+
+/*  GRID  */
+
+
+
+.grid1 > * {
+  background-color: #4d7298;
+  border: 2px solid #77a6b6;
+  border-radius: 0.5em;
+  color: white;
+  padding: 0.5em;
+}
+
+.grid1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+
+
+
+
+
+
+.grid2 > * {
+  border-radius: 0.5em;
+  color: white;
+  padding: 0.5em;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 100px 100px 100px;
+  gap: 10px;
+}
+
+.grid2 .item1 {
+  background-color: rgb(74 102 112 / 70%);
+  border: 5px solid rgb(74 102 112 / 100%);
+  grid-column: 1 / 4;
+  grid-row: 1 / 3;
+}
+
+.grid2 .item2 {
+  background-color: rgb(214 162 173 / 70%);
+  border: 5px solid rgb(214 162 173 / 100%);
+  grid-column: 2 / 5;
+  grid-row: 2 / 4;
+}
+
+
+
+.grid3 > * {
+  background-color: #4d7298;
+  border: 2px solid #77a6b6;
+  border-radius: 0.5em;
+  color: white;
+  padding: 0.5em;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+
+   
+  grid-template-areas:
+    "aa aa"
+    "bb cc"
+    ". dd";
+}
+
+.grid3 .one { grid-area: aa; }
+.grid3 .two { grid-area: bb; }
+.grid3 .three { grid-area: cc; }
+.grid3 .four { grid-area: dd; }
+
+
+
+
+
+.card {
+  display: grid;
+  grid-template-rows: 200px min-content;
+}
+
+.card > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tags {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tags > * {
+  background-color: #999999;
+  color: white;
+  padding: 0.2em 0.8em;
+  border-radius: 0.2em;
+  font-size: 80%;
+  margin: 5px;
+}
+
+ 
+.container {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+ 
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+
+
+/* FLEXBOX */
+
+.flex1 {
+  font: 1.2em / 1.5 sans-serif;
+}
+
+.flex1 nav ul {
+  max-width: 750px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  /* FIX -> */
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex1 nav a:link,
+.flex1 nav a:visited {
+  background-color: #4d7298;
+  border: 2px solid #77a6b6;
+  border-radius: 0.5em;
+  color: white;
+  padding: 0.5em;
+  display: inline-block;
+  text-decoration: none;
+}
+
+
+
+
+
+
+.flex2 {
+  font: 1.2em / 1.5 sans-serif;
+}
+
+.flex2 ul {
+  max-width: 750px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+   
+  display: flex;
+}
+
+.flex2 li {
+  background-color: #4d7298;
+  border: 2px solid #77a6b6;
+  border-radius: 0.5em;
+  color: white;
+  padding: 0.5em;
+
+   
+  flex: 1;
+}
+
+
+
+
+
+.flex3 {
+  font: 1.2em / 1.5 sans-serif;
+}
+
+.flex3 ul {
+  width: 450px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+   
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex3 li {
+  background-color: #4d7298;
+  border: 2px solid #77a6b6;
+  border-radius: 0.5em;
+  color: white;
+  padding: 0.5em;
+  margin: 0.5em;
+
+   
+  flex: auto;
+}
+
+
+
+/* RESPONSIVE DESIGN */
+
+@media screen and (min-width: 60em) {
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header ul {
+    display: flex;
+  }
+
+  header li {
+    margin: 0;
+  }
+
+  header a {
+    border: 0;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .sidebar {
+    align-self: start;
+  }
+
+}

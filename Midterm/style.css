@@ -1,0 +1,308 @@
+/* NOTE: I SOME OF THE FOLLOWING ELEMENTS OUTSIDE OF THIS CLASS  */
+
+body{
+font-family: Arial, Helvetica, sans-serif;
+margin:0;
+min-height:100vh;
+color:white;
+
+background:
+radial-gradient(900px circle at 10% 20%, rgba(255,120,0,0.35), transparent),
+radial-gradient(900px circle at 90% 20%, rgba(0,170,255,0.30), transparent),
+radial-gradient(900px circle at 50% 90%, rgba(0,255,170,0.20), transparent),
+#050505;
+
+background-attachment:fixed;
+}
+
+
+/* NAVBAR */
+
+header{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+background:#111;
+color:white;
+padding:1px 0;
+z-index:1000;
+transition:0.3s;
+}
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+width:100%;
+padding:0 20px;
+}
+
+.logo{
+margin-left:10px;
+}
+
+.logo span{
+color:#ff8c42;
+}
+
+ul{
+list-style:none;
+display:flex;
+gap:20px;
+margin: 0;
+padding:0;
+margin-right:50px;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+transition:0.2s;
+}
+
+nav a:hover{
+color:#ff8c42;
+}
+
+
+/* PAGE LAYOUT */
+
+main{
+padding:80px 40px 40px 40px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+padding:40px 20px;
+}
+
+.section-title{
+text-align:center;
+margin:60px 0;
+font-size:32px;
+}
+
+
+/* HERO */
+
+.hero{
+display:grid;
+grid-template-columns:1fr 1fr;
+align-items:center;
+gap:60px;
+max-width:1100px;
+margin:auto;
+padding:60px 20px;
+}
+
+.hero-text{
+text-align:left;
+}
+
+.hero-image img{
+width:100%;
+max-width:350px;
+border-radius:50%;
+}
+
+
+/* BUTTON */
+
+.button{
+display:inline-block;
+margin-top:20px;
+padding:12px 25px;
+background:#ff8c42;
+color:white;
+text-decoration:none;
+border-radius:30px;
+}
+
+
+/* ABOUT / PHILOSOPHY / EDUCATION */
+
+.about,
+.philosophy,
+.education,
+.cta{
+max-width:900px;
+margin:auto;
+padding:60px 20px;
+text-align:center;
+}
+
+
+/* SKILLS PREVIEW */
+
+.skills-preview{
+text-align:center;
+}
+
+.skills-columns{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:30px;
+max-width:1000px;
+margin:auto;
+}
+
+.skill-card{
+padding:20px;
+border:1px solid #ddd;
+border-radius:10px;
+}
+
+
+/* TAB SYSTEM */
+
+input[type="radio"]{
+display:none;
+}
+
+.tab-buttons{
+display:flex;
+gap:30px;
+justify-content:center;
+margin:40px 0;
+flex-wrap:wrap;
+}
+
+.tab-buttons label{
+cursor:pointer;
+padding:10px 25px;
+border-radius:30px;
+background:#333;
+color:white;
+font-weight:500;
+transition:0.2s;
+}
+
+.tab-buttons label:hover{
+background:#444;
+}
+
+#featured:checked ~ .tab-buttons label[for="featured"],
+#frontend:checked ~ .tab-buttons label[for="frontend"],
+#backend:checked ~ .tab-buttons label[for="backend"],
+#animation:checked ~ .tab-buttons label[for="animation"],
+#fineart:checked ~ .tab-buttons label[for="fineart"],
+#tools:checked ~ .tab-buttons label[for="tools"]{
+background:#ff8c42;
+}
+
+
+/* TAB CONTENT */
+
+.tab-content .content{
+display:none;
+max-width:800px;
+margin:auto;
+}
+
+#featured:checked ~ .tab-content .featured,
+#frontend:checked ~ .tab-content .frontend,
+#backend:checked ~ .tab-content .backend,
+#animation:checked ~ .tab-content .animation,
+#fineart:checked ~ .tab-content .fineart,
+#tools:checked ~ .tab-content .tools{
+display:block;
+}
+
+
+/* SKILL BARS */
+
+.skill{
+margin-bottom:25px;
+}
+
+.skill p{
+margin-bottom:8px;
+font-weight:bold;
+}
+
+.bar{
+background:#ddd;
+height:8px;
+border-radius:6px;
+overflow:hidden;
+}
+
+.bar span{
+display:block;
+height:100%;
+background:#ff8c42;
+border-radius:6px;
+}
+
+
+/* CONTACT */
+
+.contact-intro{
+text-align:center;
+max-width:600px;
+margin:20px auto 40px auto;
+}
+
+.contact-container{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:60px;
+max-width:1000px;
+margin:auto;
+}
+
+.contact-info h3{
+margin-top:20px;
+}
+
+.contact-form form{
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+input, textarea{
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+button{
+background:#ff8c42;
+border:none;
+padding:12px;
+color:white;
+font-size:16px;
+border-radius:30px;
+cursor:pointer;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+.contact-info a{
+color:#ff8c42;
+text-decoration:none;
+font-weight:500;
+}
+
+.contact-info a:hover{
+text-decoration:underline;
+}
+
+
+/* RESUME */
+
+.resume-section{
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.cta{
+text-align:center;
+}
