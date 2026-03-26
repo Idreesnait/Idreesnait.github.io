@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ICA 11</title>
+  <link rel="stylesheet" href="ica11.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Silly Story Generator</h1>
+
+    <label for="custom-name">Enter custom name:</label>
+    <input id="custom-name" type="text">
+
+    <div class="radio-group">
+      <label for="us">US</label>
+      <input id="us" type="radio" name="uk-us" checked>
+
+      <label for="uk">UK</label>
+      <input id="uk" type="radio" name="uk-us">
+    </div>
+
+    <button class="generate">Generate random story</button>
+
+    <p class="story"></p>
+  </div>
+
+  <script>
+    const customName = document.getElementById("custom-name");
+    const generateBtn = document.querySelector(".generate");
+    const story = document.querySelector(".story");
+
+    function randomValueFromArray(array) {
+      const random = Math.floor(Math.random() * array.length);
+      return array[random];
+    }
+
+    const characters = ["Luffy", "Zoro", "Sanji", "Usopp"];
+    const places = ["the Grand Line", "Marineford", "a random island", "the Thousand Sunny"];
+    const events = ["picked a fight with a Yonko", "ate something definitely not food", "got launched into the sky", "accidentally started a war"];
+
+    function returnRandomStoryString() {
+      const randomCharacter = randomValueFromArray(characters);
+      const randomPlace = randomValueFromArray(places);
+      const randomEvent = randomValueFromArray(events);
+
+      const storyText = `The heat on the Grand Line was unbearable, so ${randomCharacter} decided it was a perfect day for chaos. When they reached ${randomPlace}, they ${randomEvent}. Bob watched from a distance, completely confused — ${randomCharacter} weighs 300 pounds and somehow still moves like that.`;
+
+      return storyText;
+    }
+
+    generateBtn.addEventListener("click", generateStory);
+
+    function generateStory() {
+      let newStory = returnRandomStoryString();
+
+      if (customName.value !== "") {
+        newStory = newStory.replace("Bob", customName.value);
+      }
+
+      if (document.getElementById("uk").checked) {
+        const weight = Math.round(300 * 0.0714286) + " stone";
+        newStory = newStory.replace("300 pounds", weight);
+      }
+
+      story.textContent = newStory;
+      story.style.visibility = "visible";
+    }
+  </script>
+</body>
+</html>
