@@ -51,12 +51,32 @@ class Ball {
   collisionDetect() {
     for (const ball of balls) {
       if (this !== ball) {
-        const dx = this.x - ball.x;
-        const dy = this.y - ball.y;
+        const dx = ball.x - this.x;
+        const dy = ball.y - this.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
+        const minDistance = this.size + ball.size;
 
-        if (distance < this.size + ball.size) {
-          this.color = ball.color = randomRGB();
+        if (distance < minDistance) {
+          // swap velocities
+          let tempVelX = this.velX;
+          let tempVelY = this.velY;
+
+          this.velX = ball.velX;
+          this.velY = ball.velY;
+
+          ball.velX = tempVelX;
+          ball.velY = tempVelY;
+
+          // push balls apart so they stop overlapping
+          const overlap = 0.5 * (minDistance - distance);
+
+          const unitX = dx / distance;
+          const unitY = dy / distance;
+
+          this.x -= overlap * unitX;
+          this.y -= overlap * unitY;
+          ball.x += overlap * unitX;
+          ball.y += overlap * unitY;
         }
       }
     }
@@ -68,11 +88,17 @@ const balls = [];
 while (balls.length < 25) {
   const size = random(10, 20);
 
+  let velX = random(-5, 5);
+  let velY = random(-5, 5);
+
+  if (velX === 0) velX = 1;
+  if (velY === 0) velY = 1;
+
   const ball = new Ball(
     random(size, width - size),
     random(size, height - size),
-    random(-5, 5),
-    random(-5, 5),
+    velX,
+    velY,
     randomRGB(),
     size
   );
