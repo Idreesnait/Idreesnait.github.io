@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Worst Volume Control</title>
+  <link rel="stylesheet" href="final.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="top-bar">
+      <div class="title-wrap">
+        <h1>Volume Pong</h1>
+        <p class="subtitle">The Future of Volume Control</p>
+      </div>
+
+      <div class="status-wrap">
+        <div class="level-display" id="levelTitle">Level 1: Warm Up</div>
+        <div class="volume-display">Volume: <span id="volumeText">0</span></div>
+        <div class="controls-display">Space bar pauses</div>
+      </div>
+    </header>
+
+    <section class="game-section">
+      <div class="game-container">
+        <canvas id="gameCanvas" width="900" height="500"></canvas>
+
+        <div id="startOverlay" class="overlay show">
+          <h2>Start Game</h2>
+          <p>Every paddle hit adds +1 volume.</p>
+          <p>Missing can destroy your progress.</p>
+          <p>Set Volume freezes your current number.</p>
+          <button id="startBtn">Start</button>
+        </div>
+
+        <div id="pauseOverlay" class="overlay">
+          <h2>Pause</h2>
+        </div>
+
+        <div id="levelOverlay" class="overlay">
+          <h2 id="levelOverlayTitle">Level 1</h2>
+          <p id="levelOverlayText">Good luck. You will need it.</p>
+          <div class="overlay-buttons">
+            <button id="continueBtn">Continue</button>
+            <button id="toggleHintsBtn" class="secondary-btn">Turn Off Hints</button>
+          </div>
+        </div>
+      </div>
+<div class="dev-panel">
+  <p class="dev-title">Level Test</p>
+  <button class="level-skip-btn" data-volume="0">L1</button>
+  <button class="level-skip-btn" data-volume="10">L2</button>
+  <button class="level-skip-btn" data-volume="20">L3</button>
+  <button class="level-skip-btn" data-volume="30">L4</button>
+  <button class="level-skip-btn" data-volume="40">L5</button>
+  <button class="level-skip-btn" data-volume="50">L6</button>
+  <button class="level-skip-btn" data-volume="60">L7</button>
+  <button class="level-skip-btn" data-volume="70">L8</button>
+  <button class="level-skip-btn" data-volume="90">L9</button>
+  <button class="level-skip-btn" data-volume="99">L10</button>
+</div>
+      <div class="bottom-ui">
+        <button id="confirmBtn">Set Volume</button>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="final.js"></script>
+</body>
+</html>
