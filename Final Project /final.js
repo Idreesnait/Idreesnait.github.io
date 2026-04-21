@@ -45,11 +45,12 @@ const player = {
   y: canvas.height / 2 - BASE_PLAYER_HEIGHT / 2,
   width: BASE_PLAYER_WIDTH,
   height: BASE_PLAYER_HEIGHT,
-  speed: BASE_PLAYER_SPEED
+  speed: BASE_PLAYER_SPEED,
+  driftDir: 1
 };
 
 const playerTwo = {
-  x: canvas.width - 70,
+  x: 85,
   y: canvas.height / 2 - BASE_PLAYER_HEIGHT / 2,
   width: BASE_PLAYER_WIDTH,
   height: BASE_PLAYER_HEIGHT,
@@ -65,73 +66,91 @@ const cpuWall = {
   color: "#ffffff"
 };
 
+const goalZone = {
+  x: canvas.width - 24,
+  y: canvas.height / 2 - 55,
+  width: 24,
+  height: 110
+};
+
 const swapPlayerBall = {
   x: 70,
   y: canvas.height / 2,
-  radius: 28,
-  speed: 14
+  radius: 12,
+  speed: 20
 };
 
 const swapBallPaddle = {
-  x: canvas.width / 2 - 12,
-  y: canvas.height / 2 - 60,
-  width: 24,
-  height: 120,
-  dx: 6.5,
-  dy: 3.2,
+  x: canvas.width / 2 - BASE_PLAYER_WIDTH / 2,
+  y: canvas.height / 2 - BASE_PLAYER_HEIGHT / 2,
+  width: BASE_PLAYER_WIDTH,
+  height: BASE_PLAYER_HEIGHT,
+  dx: 8.5,
+  dy: 4.5,
   color: "#f97316"
 };
 
-let walls = [];
-let goalMode = false;
 let balls = [];
-let ballIdCounter = 0;
 let bumpers = [];
+let goalMode = false;
+let ballIdCounter = 0;
+let popups = [];
+let popupIdCounter = 0;
+let popupSpawnCooldown = 0;
+
+const popupMessages = [
+  "Don't forget to wear a seat belt.",
+  "Always brush your teeth.",
+  "Are you enjoying this game?",
+  "Remember to stay hydrated.",
+  "Posture check.",
+  "Have you studied today?",
+  "Drink some water right now.",
+  "Did you call your grandma?",
+  "Screens are bad for your eyes.",
+  "Keep it up!"
+];
 
 const levelData = {
   1: {
     title: "Level 1: Warm Up",
-    hint: "One ball. Slightly faster. Still pretending to be normal."
+    hint: "One ball. Looks to be a normal game of Pong."
   },
   2: {
-    title: "Level 2: Split",
-    hint: "At volume 10, one ball becomes three. Love that for you."
+    title: "Level 2: Role Reversal",
+    hint: "Your paddle is a ball now. The flying ball is a paddle. Speed increased."
   },
   3: {
-    title: "Level 3: Role Reversal",
-    hint: "Your paddle is now a ball. The flying ball is now a paddle."
+    title: "Level 3: Split",
+    hint: "Now it splits into 2 staggered balls."
   },
   4: {
     title: "Level 4: Now You See It",
-    hint: "The ball disappears for a whole second at a time."
+    hint: "The ball disappears for a full second."
   },
   5: {
-    title: "Level 5: Betrayal",
-    hint: "Your controls invert and the ball curves."
+    title: "Level 5: Inverted Controls",
+    hint: "Your controls invert."
   },
   6: {
-    title: "Level 6: Sideways",
-    hint: "Your paddle rotates. Normal movement. Awful shape."
+    title: "Level 6: Controller Drift",
+    hint: "Your paddle drifts when you stop moving."
   },
   7: {
     title: "Level 7: Red Means Death",
-    hint: "One real ball. Five red balls. Red sends you to zero."
+    hint: "Ballz of death."
   },
   8: {
-    title: "Level 8: Random Deflectors",
-    hint: "Static balls sit in the arena. Hit one and the ball bounces weird."
+    title: "Level 8: Pop-Up Hell",
+    hint: "Pop-up messages keep covering the game. You can close them, if you have time."
   },
   9: {
     title: "Level 9: Two Jobs",
-    hint: "Two paddles. Arrows for one. W and S for the other."
+    hint: "Two paddles. Two staggered balls. Arrows for one, W and S for the other."
   },
   10: {
-    title: "Level 10: Panic",
-    hint: "Volume 90 through 98 is fast. At 99, the goal appears."
-  },
-  11: {
-    title: "Level 11: Final Goal",
-    hint: "At volume 99, move around and score into the goal."
+    title: "Level 10: Final Goal",
+    hint: "At volume 99 only, hit the small green goal. Anywhere else is a loss."
   }
 };
 
@@ -157,8 +176,7 @@ function updateButtonText() {
 }
 
 function getLevelFromVolume(v) {
-  if (v >= 99) return 11;
-  if (v >= 90) return 10;
+  if (v >= 99) return 10;
   if (v >= 80) return 9;
   if (v >= 70) return 8;
   if (v >= 60) return 7;
@@ -180,25 +198,26 @@ function resetPaddles() {
   player.speed = BASE_PLAYER_SPEED;
   player.x = 30;
   player.y = canvas.height / 2 - player.height / 2;
+  player.driftDir = Math.random() > 0.5 ? 1 : -1;
 
   playerTwo.active = false;
   playerTwo.width = BASE_PLAYER_WIDTH;
   playerTwo.height = BASE_PLAYER_HEIGHT;
   playerTwo.speed = BASE_PLAYER_SPEED;
-  playerTwo.x = canvas.width - 70;
+  playerTwo.x = 85;
   playerTwo.y = canvas.height / 2 - playerTwo.height / 2;
 
   cpuWall.color = "#ffffff";
 
   swapPlayerBall.x = 70;
   swapPlayerBall.y = canvas.height / 2;
-  swapPlayerBall.radius = 28;
-  swapPlayerBall.speed = 14;
+  swapPlayerBall.radius = 12;
+  swapPlayerBall.speed = 20;
 
   swapBallPaddle.x = canvas.width / 2 - swapBallPaddle.width / 2;
   swapBallPaddle.y = canvas.height / 2 - swapBallPaddle.height / 2;
-  swapBallPaddle.dx = 6.5;
-  swapBallPaddle.dy = 3.2;
+  swapBallPaddle.dx = 8.5;
+  swapBallPaddle.dy = 4.5;
 }
 
 function createBall(options = {}) {
@@ -212,25 +231,94 @@ function createBall(options = {}) {
     y: options.y ?? canvas.height / 2,
     radius: options.radius ?? 12,
     dx: speed * dirX,
-    dy: randomBetween(2.4, 3.8) * dirY,
+    dy: (options.dyMagnitude ?? randomBetween(2.4, 3.8)) * dirY,
     color: options.color ?? "#f97316",
     isHazard: options.isHazard ?? false,
     visible: true
   };
 }
 
+function createSplitBalls(sourceBall, count = 2) {
+  const baseSpeed = 6.9;
+
+  if (count === 2) {
+    return [
+      createBall({
+        x: sourceBall.x,
+        y: sourceBall.y - 42,
+        speed: baseSpeed,
+        dirX: Math.sign(sourceBall.dx) || 1,
+        dirY: -1,
+        dyMagnitude: 3.2
+      }),
+      createBall({
+        x: sourceBall.x,
+        y: sourceBall.y + 42,
+        speed: baseSpeed + 0.6,
+        dirX: Math.sign(sourceBall.dx) || 1,
+        dirY: 1,
+        dyMagnitude: 3.8
+      })
+    ];
+  }
+
+  return [createBall({ speed: baseSpeed })];
+}
+
+function createPopup(forceMessage = null) {
+  const width = randomBetween(180, 260);
+  const height = randomBetween(110, 170);
+  const x = randomBetween(40, canvas.width - width - 60);
+  const y = randomBetween(50, canvas.height - height - 40);
+  const message = forceMessage ?? popupMessages[Math.floor(Math.random() * popupMessages.length)];
+
+  popups.push({
+    id: popupIdCounter++,
+    x,
+    y,
+    width,
+    height,
+    message
+  });
+}
+
+function spawnPopupsForVolumeGain() {
+  if (currentLevel === 1) {
+    if (volume >= 3 && volume <= 9 && volume % 2 === 1) {
+      createPopup();
+    }
+    return;
+  }
+
+  if (currentLevel === 8) {
+    const count = Math.random() < 0.5 ? 2 : 1;
+    for (let i = 0; i < count; i++) {
+      createPopup();
+    }
+  }
+}
+
+function seedWarmupPopups() {
+  return;
+}
+
 function resetBallsForLevel() {
   balls = [];
-  walls = [];
   bumpers = [];
   goalMode = false;
   invisTimer = 0;
   invisibleNow = false;
   curveTime = 0;
+  popupSpawnCooldown = 0;
+
+  if (currentLevel !== 1 && currentLevel !== 8) {
+    popups = [];
+  }
 
   if (currentLevel === 1) {
     balls.push(createBall({ speed: 6.3 }));
-  } else if (currentLevel === 2) {
+    
+  } else if (currentLevel === 3) {
     balls.push(createBall({ speed: 6.8 }));
   } else if (currentLevel === 4) {
     balls.push(createBall({ speed: 7.2 }));
@@ -240,12 +328,12 @@ function resetBallsForLevel() {
     balls.push(createBall({ speed: 7.4 }));
   } else if (currentLevel === 7) {
     balls.push(createBall({ speed: 7.2 }));
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       balls.push(
         createBall({
-          x: canvas.width * 0.52 + i * 18,
-          y: 70 + i * 70,
-          speed: 5.2 + i * 0.15,
+          x: canvas.width * 0.56 + i * 28,
+          y: 95 + i * 110,
+          speed: 5.2 + i * 0.25,
           color: "#ff2b2b",
           isHazard: true
         })
@@ -253,23 +341,26 @@ function resetBallsForLevel() {
     }
   } else if (currentLevel === 8) {
     balls.push(createBall({ speed: 7.0 }));
-    bumpers = [
-      { x: 260, y: 120, radius: 28 },
-      { x: 420, y: 240, radius: 28 },
-      { x: 300, y: 380, radius: 28 },
-      { x: 560, y: 150, radius: 28 },
-      { x: 610, y: 330, radius: 28 }
-    ];
+    if (popups.length < 5) {
+      for (let i = popups.length; i < 5; i++) {
+        createPopup();
+      }
+    }
   } else if (currentLevel === 9) {
     playerTwo.active = true;
-    balls.push(createBall({ speed: 7.0 }));
+    balls.push(
+      ...createSplitBalls(
+        {
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          dx: 1
+        },
+        2
+      )
+    );
   } else if (currentLevel === 10) {
-    balls.push(createBall({ speed: 10.5 }));
-    player.speed = 22;
-  } else if (currentLevel === 11) {
     goalMode = true;
-    balls.push(createBall({ speed: 4.5, dirX: 1 }));
-    player.speed = 12;
+    balls.push(createBall({ speed: 4.7, dirX: -1, dyMagnitude: 3.0 }));
   }
 }
 
@@ -277,11 +368,11 @@ function applyLevelSettings() {
   resetPaddles();
 
   if (currentLevel === 2) {
-    player.speed = 15;
+    swapPlayerBall.speed = 20;
   }
 
   if (currentLevel === 3) {
-    swapPlayerBall.speed = 15;
+    player.speed = 15;
   }
 
   if (currentLevel === 4) {
@@ -293,10 +384,6 @@ function applyLevelSettings() {
   }
 
   if (currentLevel === 6) {
-    player.width = 90;
-    player.height = 18;
-    player.x = 55;
-    player.y = canvas.height / 2 - player.height / 2;
     player.speed = 15;
   }
 
@@ -314,10 +401,6 @@ function applyLevelSettings() {
   }
 
   if (currentLevel === 10) {
-    player.speed = 22;
-  }
-
-  if (currentLevel === 11) {
     player.speed = 12;
   }
 
@@ -351,6 +434,7 @@ function increaseVolume() {
   if (volume < 100) {
     volume += 1;
     updateVolumeDisplay();
+    spawnPopupsForVolumeGain();
     advanceLevelIfNeeded();
   }
 }
@@ -359,10 +443,11 @@ function sendVolumeToZero() {
   if (!volumeIsSet) {
     volume = 0;
     updateVolumeDisplay();
-    currentLevel = 1;
+    currentLevel = getLevelFromVolume(volume);
     applyLevelSettings();
+
     if (hintsEnabled) {
-      showLevelPopup(1);
+      showLevelPopup(currentLevel);
     }
   } else {
     resetBallsForLevel();
@@ -376,33 +461,6 @@ function resetBallOnly(ball) {
   const dirY = Math.random() < 0.5 ? -1 : 1;
   ball.dx = Math.abs(ball.dx || 6) * dirX;
   ball.dy = randomBetween(2.4, 3.8) * dirY;
-}
-
-function splitIntoThree(sourceBall) {
-  const baseSpeed = 6.8;
-  balls = [
-    createBall({
-      x: sourceBall.x,
-      y: sourceBall.y - 22,
-      speed: baseSpeed,
-      dirX: Math.sign(sourceBall.dx) || 1,
-      dirY: -1
-    }),
-    createBall({
-      x: sourceBall.x,
-      y: sourceBall.y,
-      speed: baseSpeed + 0.4,
-      dirX: Math.sign(sourceBall.dx) || 1,
-      dirY: 1
-    }),
-    createBall({
-      x: sourceBall.x,
-      y: sourceBall.y + 22,
-      speed: baseSpeed + 0.8,
-      dirX: Math.sign(sourceBall.dx) || 1,
-      dirY: -1
-    })
-  ];
 }
 
 function drawBackground() {
@@ -421,15 +479,20 @@ function drawBackground() {
 
 function drawGoal() {
   if (!goalMode) return;
-  ctx.fillStyle = "#1f7a1f";
-  ctx.fillRect(canvas.width - 24, canvas.height / 2 - 70, 20, 140);
+
+  ctx.fillStyle = "#173017";
+  ctx.fillRect(goalZone.x, 0, goalZone.width, canvas.height);
+
+  ctx.fillStyle = "#29a329";
+  ctx.fillRect(goalZone.x, goalZone.y, goalZone.width, goalZone.height);
+
   ctx.fillStyle = "#9cff9c";
   ctx.font = "16px Arial";
-  ctx.fillText("GOAL", canvas.width - 78, canvas.height / 2 - 84);
+  ctx.fillText("GOAL", canvas.width - 82, goalZone.y - 10);
 }
 
 function drawCpuWall() {
-  if (currentLevel === 11) return;
+  if (goalMode) return;
   ctx.fillStyle = cpuWall.color;
   ctx.fillRect(cpuWall.x, cpuWall.y, cpuWall.width, cpuWall.height);
 }
@@ -459,52 +522,98 @@ function drawSwapMode() {
   ctx.fillRect(swapBallPaddle.x, swapBallPaddle.y, swapBallPaddle.width, swapBallPaddle.height);
 }
 
-function drawBumpers() {
-  if (currentLevel !== 8) return;
-  bumpers.forEach((bumper) => {
-    ctx.beginPath();
-    ctx.arc(bumper.x, bumper.y, bumper.radius, 0, Math.PI * 2);
-    ctx.fillStyle = "#666";
-    ctx.fill();
-    ctx.closePath();
-  });
-}
-
 function drawText() {
   ctx.fillStyle = "#bdbdbd";
   ctx.font = "20px Arial";
 
   if (currentLevel === 9) {
-    ctx.fillText("ARROWS", 40, 35);
-    ctx.fillText("W / S", canvas.width - 130, 35);
-  } else if (currentLevel === 3) {
+    ctx.fillText("ARROWS", 35, 35);
+    ctx.fillText("W / S", 110, 35);
+  } else if (currentLevel === 2) {
     ctx.fillText("BALL", 35, 35);
     ctx.fillText("WALL", canvas.width - 105, 35);
   } else {
     ctx.fillText("YOU", 55, 35);
-    if (currentLevel !== 11) {
+    if (!goalMode) {
       ctx.fillText("WALL", canvas.width - 105, 35);
     }
   }
 }
 
+function drawPopup(popup) {
+  ctx.fillStyle = "#f5f5f5";
+  ctx.fillRect(popup.x, popup.y, popup.width, popup.height);
+
+  ctx.fillStyle = "#1a1a1a";
+  ctx.fillRect(popup.x, popup.y, popup.width, 26);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "14px Arial";
+  ctx.fillText("Important Message", popup.x + 10, popup.y + 17);
+
+  ctx.fillStyle = "#ff4d4d";
+  ctx.fillRect(popup.x + popup.width - 26, popup.y + 4, 18, 18);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "12px Arial";
+  ctx.fillText("X", popup.x + popup.width - 20, popup.y + 17);
+
+  ctx.fillStyle = "#111";
+  ctx.font = "14px Arial";
+  wrapText(popup.message, popup.x + 12, popup.y + 48, popup.width - 24, 18);
+
+  if (popup.message === "Are you enjoying this game?") {
+    ctx.fillStyle = "#f5b301";
+    ctx.font = "18px Arial";
+    ctx.fillText("★★★★★", popup.x + 12, popup.y + popup.height - 18);
+  }
+}
+
+function drawPopups() {
+  popups.forEach(drawPopup);
+}
+
+function wrapText(text, x, y, maxWidth, lineHeight) {
+  const words = text.split(" ");
+  let line = "";
+
+  for (let i = 0; i < words.length; i++) {
+    const testLine = line + words[i] + " ";
+    const metrics = ctx.measureText(testLine);
+
+    if (metrics.width > maxWidth && i > 0) {
+      ctx.fillText(line, x, y);
+      line = words[i] + " ";
+      y += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+
+  ctx.fillText(line, x, y);
+}
+
 function draw() {
   drawBackground();
   drawGoal();
-  drawBumpers();
   drawText();
 
-  if (currentLevel === 3) {
+  if (currentLevel === 2) {
     drawSwapMode();
     drawCpuWall();
-  } else {
-    drawPaddle(player, "#ffffff");
-    if (currentLevel === 9 && playerTwo.active) {
-      drawPaddle(playerTwo, "#7ddf95");
-    }
-    drawCpuWall();
-    balls.forEach(drawBall);
+    drawPopups();
+    return;
   }
+
+  drawPaddle(player, "#ffffff");
+
+  if (currentLevel === 9 && playerTwo.active) {
+    drawPaddle(playerTwo, "#7ddf95");
+  }
+
+  drawCpuWall();
+  balls.forEach(drawBall);
+  drawPopups();
 }
 
 function moveVerticalPaddle(paddle, moveUp, moveDown, invert = false) {
@@ -515,15 +624,6 @@ function moveVerticalPaddle(paddle, moveUp, moveDown, invert = false) {
 
   paddle.y += direction * paddle.speed;
   paddle.y = clamp(paddle.y, 0, canvas.height - paddle.height);
-}
-
-function moveHorizontalPaddleNormal() {
-  let direction = 0;
-  if (upPressed) direction -= 1;
-  if (downPressed) direction += 1;
-
-  player.y += direction * player.speed;
-  player.y = clamp(player.y, 0, canvas.height - player.height);
 }
 
 function moveGoalModePaddle() {
@@ -555,8 +655,24 @@ function moveSwapPlayerBall() {
   );
 }
 
+function moveDriftPaddle() {
+  if (upPressed) {
+    player.y -= player.speed;
+  } else if (downPressed) {
+    player.y += player.speed;
+  } else {
+    if (Math.random() < 0.02) {
+      player.driftDir *= -1;
+    }
+
+    player.y += player.driftDir * (player.speed * 0.6);
+  }
+
+  player.y = clamp(player.y, 0, canvas.height - player.height);
+}
+
 function movePlayerControls() {
-  if (currentLevel === 3) {
+  if (currentLevel === 2) {
     moveSwapPlayerBall();
     return;
   }
@@ -567,11 +683,11 @@ function movePlayerControls() {
   }
 
   if (currentLevel === 6) {
-    moveHorizontalPaddleNormal();
+    moveDriftPaddle();
     return;
   }
 
-  if (currentLevel === 11) {
+  if (currentLevel === 10) {
     moveGoalModePaddle();
     return;
   }
@@ -614,21 +730,21 @@ function applyBallSpecials(deltaTime) {
       ball.dy = clamp(ball.dy, -7, 7);
     });
   }
+
+  if (currentLevel === 8) {
+    popupSpawnCooldown -= deltaTime;
+
+    if (popupSpawnCooldown <= 0) {
+      createPopup(Math.random() < 0.25 ? "Are you enjoying this game?" : null);
+      popupSpawnCooldown = randomBetween(0.8, 1.5);
+    }
+  }
 }
 
 function ballHitsVerticalPaddle(ball, paddle) {
   return (
     ball.x - ball.radius <= paddle.x + paddle.width &&
     ball.x + ball.radius >= paddle.x &&
-    ball.y + ball.radius >= paddle.y &&
-    ball.y - ball.radius <= paddle.y + paddle.height
-  );
-}
-
-function ballHitsHorizontalPaddle(ball, paddle) {
-  return (
-    ball.x + ball.radius >= paddle.x &&
-    ball.x - ball.radius <= paddle.x + paddle.width &&
     ball.y + ball.radius >= paddle.y &&
     ball.y - ball.radius <= paddle.y + paddle.height
   );
@@ -653,21 +769,6 @@ function reflectOffVerticalPaddle(ball, paddle, isPlayerSide) {
   ball.dy += hitOffset * 2.2;
 }
 
-function reflectOffHorizontalPaddle(ball, paddle) {
-  const centerX = paddle.x + paddle.width / 2;
-  const offset = (ball.x - centerX) / (paddle.width / 2);
-
-  ball.y = ball.dy > 0 ? paddle.y - ball.radius : paddle.y + paddle.height + ball.radius;
-
-  if (Math.abs(offset) < 0.25) {
-    ball.dy *= -1;
-    ball.dx *= 0.95;
-  } else {
-    ball.dy *= -1;
-    ball.dx += offset * 5;
-  }
-}
-
 function reflectOffCpuWall(ball) {
   ball.x = cpuWall.x - ball.radius;
   ball.dx = -Math.abs(ball.dx);
@@ -689,17 +790,15 @@ function handleWallCollision(ball) {
 function handleGoal(ball) {
   if (!goalMode || volume !== 99) return false;
 
-  const goalTop = canvas.height / 2 - 70;
-  const goalBottom = canvas.height / 2 + 70;
-
-  if (ball.x + ball.radius >= canvas.width - 24) {
-    if (ball.y >= goalTop && ball.y <= goalBottom) {
-      if (!volumeIsSet) {
-        volume = 100;
-        updateVolumeDisplay();
-      }
+  if (ball.x + ball.radius >= goalZone.x) {
+    if (ball.y >= goalZone.y && ball.y <= goalZone.y + goalZone.height) {
+      volume = 100;
+      updateVolumeDisplay();
       return true;
     }
+
+    sendVolumeToZero();
+    return true;
   }
 
   return false;
@@ -766,30 +865,32 @@ function moveSwapMode() {
   }
 }
 
-function handleBumpers(ball) {
-  if (currentLevel !== 8) return;
+function handleNormalBallPlayerCollision(ball) {
+  if (ballHitsVerticalPaddle(ball, player) && ball.dx < 0) {
+    reflectOffVerticalPaddle(ball, player, true);
+    if (currentLevel !== 10) {
+  increaseVolume();
+}
 
-  for (const bumper of bumpers) {
-    const dx = ball.x - bumper.x;
-    const dy = ball.y - bumper.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (currentLevel === 3 && balls.length === 1 && volume >= 20 && volume < 30) {
+      balls = createSplitBalls(ball, 2);
+      return true;
+    }
 
-    if (distance <= ball.radius + bumper.radius) {
-      const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
-      const angle = randomBetween(-Math.PI / 3, Math.PI / 3);
+    return true;
+  }
 
-      if (ball.dx > 0) {
-        ball.dx = -Math.abs(speed * Math.cos(angle));
-      } else {
-        ball.dx = Math.abs(speed * Math.cos(angle));
-      }
-
-      ball.dy = speed * Math.sin(angle);
-      ball.x += ball.dx * 0.5;
-      ball.y += ball.dy * 0.5;
-      return;
+  if (currentLevel === 9 && playerTwo.active) {
+    if (ballHitsVerticalPaddle(ball, playerTwo) && ball.dx < 0) {
+      reflectOffVerticalPaddle(ball, playerTwo, true);
+      if (currentLevel !== 10) {
+  increaseVolume();
+}
+      return true;
     }
   }
+
+  return false;
 }
 
 function moveBalls() {
@@ -801,59 +902,32 @@ function moveBalls() {
     ball.y += ball.dy;
 
     handleWallCollision(ball);
-    handleBumpers(ball);
 
     if (!ball.isHazard) {
-      if (currentLevel === 6) {
-        if (ballHitsHorizontalPaddle(ball, player) && ball.dx < 0) {
-          reflectOffHorizontalPaddle(ball, player);
-          increaseVolume();
-        }
-      } else {
-        if (ballHitsVerticalPaddle(ball, player) && ball.dx < 0) {
-          reflectOffVerticalPaddle(ball, player, true);
-          increaseVolume();
-
-          if (currentLevel === 2 && balls.length === 1 && volume >= 10 && volume < 20) {
-            splitIntoThree(ball);
-            return;
-          }
-        }
-
-        if (currentLevel === 9 && playerTwo.active) {
-          if (ballHitsVerticalPaddle(ball, playerTwo) && ball.dx < 0) {
-            reflectOffVerticalPaddle(ball, playerTwo, true);
-            increaseVolume();
-          }
-        }
+      const changed = handleNormalBallPlayerCollision(ball);
+      if (changed && currentLevel === 3 && balls.length === 2) {
+        return;
       }
 
-      if (currentLevel !== 11 && ballHitsCpuWall(ball) && ball.dx > 0) {
+      if (!goalMode && ballHitsCpuWall(ball) && ball.dx > 0) {
         reflectOffCpuWall(ball);
         increaseVolume();
       }
     } else {
-      if (currentLevel === 6) {
-        if (ballHitsHorizontalPaddle(ball, player) && ball.dx < 0) {
+      if (ballHitsVerticalPaddle(ball, player) && ball.dx < 0) {
+        sendVolumeToZero();
+        return;
+      }
+
+      if (currentLevel === 9 && playerTwo.active) {
+        if (ballHitsVerticalPaddle(ball, playerTwo) && ball.dx < 0) {
           sendVolumeToZero();
           return;
         }
-      } else {
-        if (ballHitsVerticalPaddle(ball, player) && ball.dx < 0) {
-          sendVolumeToZero();
-          return;
-        }
+      }
 
-        if (currentLevel === 9 && playerTwo.active) {
-          if (ballHitsVerticalPaddle(ball, playerTwo) && ball.dx < 0) {
-            sendVolumeToZero();
-            return;
-          }
-        }
-
-        if (ballHitsCpuWall(ball) && ball.dx > 0) {
-          reflectOffCpuWall(ball);
-        }
+      if (!goalMode && ballHitsCpuWall(ball) && ball.dx > 0) {
+        reflectOffCpuWall(ball);
       }
     }
 
@@ -878,6 +952,39 @@ function moveBalls() {
   }
 }
 
+function handlePopupClick(mouseX, mouseY) {
+  for (let i = popups.length - 1; i >= 0; i--) {
+    const popup = popups[i];
+    const closeX = popup.x + popup.width - 26;
+    const closeY = popup.y + 4;
+    const closeW = 18;
+    const closeH = 18;
+
+    const clickedClose =
+      mouseX >= closeX &&
+      mouseX <= closeX + closeW &&
+      mouseY >= closeY &&
+      mouseY <= closeY + closeH;
+
+    if (clickedClose) {
+      popups.splice(i, 1);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+canvas.addEventListener("click", function (event) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mouseX = (event.clientX - rect.left) * scaleX;
+  const mouseY = (event.clientY - rect.top) * scaleY;
+
+  handlePopupClick(mouseX, mouseY);
+});
+
 function gameLoop(timestamp) {
   if (!lastTime) lastTime = timestamp;
   const deltaTime = (timestamp - lastTime) / 1000;
@@ -889,7 +996,7 @@ function gameLoop(timestamp) {
     movePlayerControls();
     applyBallSpecials(deltaTime);
 
-    if (currentLevel === 3) {
+    if (currentLevel === 2) {
       moveSwapMode();
     } else {
       moveBalls();
