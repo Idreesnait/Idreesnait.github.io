@@ -1039,12 +1039,19 @@ function toggleSetVolume() {
   if (!volumeIsSet) {
     lockedVolume = volume;
     volumeIsSet = true;
+
+    isPaused = true;
+    pauseOverlay.querySelector("h2").textContent = "Volume Has Been Set";
+    pauseOverlay.classList.add("show");
   } else {
     volume = lockedVolume;
     updateVolumeDisplay();
     volumeIsSet = false;
     currentLevel = getLevelFromVolume(volume);
     applyLevelSettings();
+
+    pauseOverlay.classList.remove("show");
+    isPaused = false;
   }
 
   updateButtonText();
@@ -1072,6 +1079,12 @@ function skipToVolume(targetVolume) {
 }
 
 document.addEventListener("keydown", function (event) {
+  const gameKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"];
+
+  if (gameKeys.includes(event.code)) {
+    event.preventDefault();
+  }
+
   if (event.code === "ArrowUp") upPressed = true;
   if (event.code === "ArrowDown") downPressed = true;
   if (event.code === "ArrowLeft") leftPressed = true;
@@ -1080,7 +1093,6 @@ document.addEventListener("keydown", function (event) {
   if (event.code === "KeyS") sPressed = true;
 
   if (event.code === "Space") {
-    event.preventDefault();
     togglePause();
   }
 });
